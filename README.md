@@ -4,27 +4,111 @@
 ## Consultas multitabla (Composición interna)
 
    1. Obtén un listado con el nombre de cada cliente y el nombre y apellido de su representante de ventas.
+   ```sql
+   SELECT nombre_cliente, CONCAT(nombre, ' ', apellido1,  ' ',apellido2) AS nombre 
+   FROM cliente 
+   JOIN empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado;
+
+   ```
 
    2. Muestra el nombre de los clientes que hayan realizado pagos junto con el nombre de sus representantes de ventas.
+   ```sql
+   SELECT nombre_cliente, CONCAT(empleado.nombre, ' ', empleado.apellido1, ' ', empleado.apellido2) AS nombre_representante_ventas
+   FROM cliente
+   JOIN pago ON cliente.codigo_cliente = pago.codigo_cliente
+   JOIN empleado ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas
+   ORDER BY nombre_cliente ASC;
+   ```
 
    3. Muestra el nombre de los clientes que no hayan realizado pagos junto con el nombre de sus representantes de ventas.
+   ```sql
+   SELECT nombre_cliente, CONCAT(empleado.nombre, ' ', empleado.apellido1, ' ', empleado.apellido2) AS nombre_representante_ventas
+   FROM cliente
+   LEFT JOIN pago ON cliente.codigo_cliente = pago.codigo_cliente
+   JOIN empleado ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas
+   WHERE pago.codigo_cliente IS NULL
+   ORDER BY nombre_cliente ASC;
+
+   ```
 
    4. Devuelve el nombre de los clientes que han hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
 
+   ```sql
+   SELECT nombre_cliente, CONCAT(e.nombre, ' ', e.apellido1, ' ', e.apellido2) AS nombre_representante_ventas, CONCAT(o.ciudad) AS ciudad_oficina
+   FROM cliente c
+   JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+   JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+   JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
+   ORDER BY nombre_cliente ASC;
+
+   ```
+
    5. Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
+
+   ```sql
+   SELECT c.nombre_cliente AS cliente_sin_pago, CONCAT(e.nombre, ' ', e.apellido1, ' ', e.apellido2) AS nombre_representante_de_ventas, o.ciudad AS ciudad_oficina
+   FROM cliente c 
+   LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente 
+   JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado 
+   JOIN oficina o ON e.codigo_oficina = o.codigo_oficina 
+   WHERE p.codigo_cliente IS NULL;
+
+   ```
 
    6. Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
 
+   ```sql
+   SELECT CONCAT(o.linea_direccion1, ' ', o.linea_direccion2) AS ciudad_oficina 
+   FROM oficina o 
+   JOIN empleado e ON o.codigo_oficina = e.codigo_oficina 
+   JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas 
+   WHERE c.ciudad = 'Fuenlabrada';
+
+   ```
+
    7. Devuelve el nombre de los clientes y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
+
+   ```sql
+   SELECT c.nombre_cliente, CONCAT(e.nombre, ' ', e.apellido1, ' ',e.apellido2) AS nombre_representante, o.ciudad AS ciudad_representante 
+   FROM cliente c 
+   JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado 
+   JOIN oficina o ON e.codigo_oficina = o.codigo_oficina;
+   ```
 
    8. Devuelve un listado con el nombre de los empleados junto con el nombre de sus jefes.
 
+   ```sql
+   SELECT e.nombre AS nombre_empleado, jefe.nombre AS nombre_jefe 
+   FROM empleado e 
+   LEFT JOIN empleado jefe ON jefe.codigo_jefe = e.codigo_empleado;
+   ```
+
    9. Devuelve un listado que muestre el nombre de cada empleados, el nombre de su jefe y el nombre del jefe de sus jefe.
+   ```sql
+   SELECT CONCAT(e.nombre, ' ', e.apellido1, ' ', e.apellido2) AS nombre_empleado, CONCAT(jefe.nombre, ' ', jefe.apellido1, ' ', jefe.apellido2) AS nombre_jefe, CONCAT(jefe2.nombre, ' ', jefe2.apellido1, ' ', jefe2.apellido2) AS nombre_jefe_del_jefe
+   FROM empleado e
+   JOIN empleado jefe ON e.codigo_jefe = e2.codigo_empleado
+   JOIN empleado jefe2 ON jefe.codigo_jefe = jefe2.codigo_empleado;
+   ```
 
    10. Devuelve el nombre de los clientes a los que no se les ha entregado a tiempo un pedido.
 
-   11. Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente.
+   ```sql
+   SELECT c.nombre_cliente AS nombre_cliente
+   FROM cliente c
+   JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+   WHERE fecha_entrega > fecha_esperada OR fecha_entrega IS NULL;
+   ```
 
+   11. Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente.
+   ```sql
+   SELECT DISTINCT c.nombre_cliente, g.gama 
+   FROM cliente c 
+   JOIN pedido p ON c.codigo_cliente = p.codigo_cliente 
+   JOIN detalle_pedido d ON p.codigo_pedido = d.codigo_pedido 
+   JOIN producto pro ON d.codigo_producto = pro.codigo_producto 
+   JOIN gama_producto g ON pro.gama = g.gama;
+   ```
 
 ## Consultas multitabla (Composición externa)
 
