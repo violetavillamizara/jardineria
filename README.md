@@ -328,19 +328,48 @@
 #### Con operadores básicos de comparación
 
 1. Devuelve el nombre del cliente con mayor límite de crédito.
+ ```sql
+   
+   ```
 
 2. Devuelve el nombre del producto que tenga el precio de venta más caro.
+ ```sql
+   
+   ```
 3. Devuelve el nombre del producto del que se han vendido más unidades. (Tenga en cuenta que tendrá que calcular cuál es el número total de unidades que se han vendido de cada producto a partir de los datos de la tabla `detalle_pedido`)
+ ```sql
+   
+   ```
 4. Los clientes cuyo límite de crédito sea mayor que los pagos que haya realizado. (Sin utilizar `INNER JOIN`).
+ ```sql
+   
+   ```
 5. Devuelve el producto que más unidades tiene en stock.
+ ```sql
+   
+   ```
 6. Devuelve el producto que menos unidades tiene en stock.
+ ```sql
+   
+   ```
 7. Devuelve el nombre, los apellidos y el email de los empleados que están a cargo de **Alberto Soria**.
-
+ ```sql
+   
+   ```
 #### Subconsultas con ALL y ANY
 
 1. Devuelve el nombre del cliente con mayor límite de crédito.
+ ```sql
+   
+   ```
 2. Devuelve el nombre del producto que tenga el precio de venta más caro.
+ ```sql
+   
+   ```
 3. Devuelve el producto que menos unidades tiene en stock.
+ ```sql
+   
+   ```
 
 #### Subconsultas con IN y NOT IN
 
@@ -358,3 +387,47 @@
 2. Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.
 3. Devuelve un listado de los productos que nunca han aparecido en un pedido.
 4. Devuelve un listado de los productos que han aparecido en un pedido alguna vez.
+
+
+# Tips for Querys
+## Tips con GROUP BY
+
+1. Agrupar por más de una columna
+ej.
+
+```sql
+
+```
+
+2. Having para aggregate functions
+ej. 
+
+```sql
+SELECT e.nombre AS nombre_empleado_rep_ventas, COUNT(c.nombre_cliente)
+FROM cliente c JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+GROUP BY e.nombre
+HAVING COUNT(c.nombre_cliente) > 4;
+```
+
+3. GROUP BY con funcion escalar
+ej
+
+4. GROUP BY de dos consultas con UNION ALL
+- las dos consultas deben tener el mismo alias de columna
+- union all
+- alias para la union()
+- la consulta exterior tiene el group by
+
+ej
+
+5. Concatenar valores del resultado
+ej
+```sql
+SELECT e.nombre AS nombre_empleado_rep_ventas, GROUP_CONCAT(c.nombre_cliente SEPARATOR ', ') AS clientes
+FROM cliente c
+JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+GROUP BY e.nombre;
+```
+
+
+## Tips con 
