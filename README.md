@@ -393,14 +393,14 @@
 ## Tips con GROUP BY
 
 1. Agrupar por más de una columna
-ej.
+
 
 ```sql
 
 ```
 
 2. Having para aggregate functions
-ej. 
+
 
 ```sql
 SELECT e.nombre AS nombre_empleado_rep_ventas, COUNT(c.nombre_cliente)
@@ -410,7 +410,10 @@ HAVING COUNT(c.nombre_cliente) > 4;
 ```
 
 3. GROUP BY con funcion escalar
-ej
+
+```sql
+
+```
 
 4. GROUP BY de dos consultas con UNION ALL
 - las dos consultas deben tener el mismo alias de columna
@@ -418,10 +421,12 @@ ej
 - alias para la union()
 - la consulta exterior tiene el group by
 
-ej
+```sql
+
+```
 
 5. Concatenar valores del resultado
-ej
+
 ```sql
 SELECT e.nombre AS nombre_empleado_rep_ventas, GROUP_CONCAT(c.nombre_cliente SEPARATOR ', ') AS clientes
 FROM cliente c
@@ -430,4 +435,40 @@ GROUP BY e.nombre;
 ```
 
 
-## Tips con 
+## Tips con WHERE
+
+1. IN para comparar con colecciones ()
+
+```sql
+SELECT * FROM producto
+WHERE gama IN (1,2)
+```
+
+2. Subconsulta con WHERE
+
+```sql
+
+```
+
+3. LIKE
+
+```sql
+
+```
+
+4. Subconsulta dentro de IN
+
+```sql
+SELECT * FROM producto
+WHERE gama IN(
+   SELECT gama FROM gama_producto
+   WHERE gama like 'alta'
+)
+```
+
+5.
+
+```sql
+
+```
+## Tips con SELECT
