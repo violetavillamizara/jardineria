@@ -115,49 +115,76 @@
    1. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
    
    ```sql
-   
+   SELECT *
+   FROM cliente c
+   LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+   WHERE p.codigo_cliente IS NULL;
    ```
 
    2. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pedido.
    
    ```sql
-   
+   SELECT *
+   FROM cliente c
+   LEFT JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+   WHERE p.codigo_cliente IS NULL;
    ```
 
    3. Devuelve un listado que muestre los clientes que no han realizado ningún pago y los que no han realizado ningún pedido.
    
    ```sql
-   
+   SELECT *
+   FROM cliente c
+   LEFT JOIN pago ON c.codigo_cliente = pago.codigo_cliente
+   LEFT JOIN pedido ON c.codigo_cliente = pedido.codigo_cliente
+   WHERE pago.codigo_cliente IS NULL OR pedido.codigo_cliente IS NULL;
    ```
 
    4. Devuelve un listado que muestre solamente los empleados que no tienen una oficina asociada.
    
    ```sql
-   
+   SELECT *
+   FROM empleado e
+   LEFT JOIN oficina of ON e.codigo_oficina = of.codigo_oficina
+   WHERE of.codigo_oficina IS NULL;
    ```
 
    5. Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado.
    
    ```sql
-   
+   SELECT nombre 
+   FROM empleado
+   LEFT JOIN cliente c ON empleado.codigo_empleado = c.codigo_empleado_rep_ventas 
+   WHERE c.codigo_empleado_rep_ventas IS NULL;
    ```
 
    6. Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado junto con los datos de la oficina donde trabajan.
    
    ```sql
-   
+   SELECT e.*, of.*
+   FROM empleado e
+   LEFT JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+   LEFT JOIN oficina of ON e.codigo_oficina = of.codigo_oficina
+   WHERE c.codigo_empleado_rep_ventas IS NULL;
    ```
 
    7. Devuelve un listado que muestre los empleados que no tienen una oficina asociada y los que no tienen un cliente asociado.
    
    ```sql
-   
+   SELECT DISTINCT e.*
+   FROM empleado e
+   LEFT JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+   LEFT JOIN oficina of ON e.codigo_oficina = of.codigo_oficina
+   WHERE c.codigo_empleado_rep_ventas IS NULL OR of.codigo_oficina IS NULL;
    ```
 
    8. Devuelve un listado de los productos que nunca han aparecido en un pedido.
    
    ```sql
-   
+   SELECT nombre 
+   FROM producto 
+   LEFT JOIN detalle_pedido d ON producto.codigo_producto = d.codigo_producto  
+   WHERE d.codigo_producto IS NULL;
    ```
 
    9. Devuelve un listado de los productos que nunca han aparecido en un pedido. El resultado debe mostrar el nombre, la descripción y la imagen del producto.
@@ -307,19 +334,25 @@
    14. Devuelve un listado con todas las formas de pago que aparecen en la tabla pago. Tenga en cuenta que no deben aparecer formas de pago repetidas.
    
    ```sql
-   
+   SELECT DISTINCT forma_pago 
+   FROM pago;
    ```
 
    15. Devuelve un listado con todos los productos que pertenecen a la gama Ornamentales y que tienen más de 100 unidades en stock. El listado deberá estar ordenado por su precio de venta, mostrando en primer lugar los de mayor precio.
    
    ```sql
-   
+   SELECT *
+   FROM producto
+   WHERE gama = 'Ornamentales' AND cantidad_en_stock > 100
+   ORDER BY precio_venta DESC;
    ```
 
    16. Devuelve un listado con todos los clientes que sean de la ciudad de Madrid y cuyo representante de ventas tenga el código de empleado 11 o 30.
    
    ```sql
-   
+   SELECT nombre_cliente 
+   FROM cliente 
+   WHERE ciudad = 'Madrid' AND codigo_empleado_rep_ventas = 11 OR codigo_empleado_rep_ventas = 30;
    ```
 
 
@@ -374,12 +407,33 @@
 #### Subconsultas con IN y NOT IN
 
 1. Devuelve el nombre, apellido1 y cargo de los empleados que no representen a ningún cliente.
+```sql
+
+```
 2. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
+```sql
+
+```
 3. Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.
+```sql
+
+```
 4. Devuelve un listado de los productos que nunca han aparecido en un pedido.
+```sql
+
+```
 5. Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos empleados que no sean representante de ventas de ningún cliente.
+```sql
+
+```
 6. Devuelve las oficinas donde **no trabajan** ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama `Frutales`.
+```sql
+
+```
 7. Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
+```sql
+
+```
 
 #### Subconsultas con EXISTS y NOT EXISTS
 
@@ -466,9 +520,15 @@ WHERE gama IN(
 )
 ```
 
-5.
-
+5. WHERE con funciones escalares
+substring
 ```sql
 
 ```
 ## Tips con SELECT
+
+1. Valores fijos
+2. Operaciones con columnas
+3. Condiciones
+4. Subquery
+5. Consulta sobre subconsulta
