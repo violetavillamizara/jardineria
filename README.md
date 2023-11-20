@@ -450,6 +450,10 @@
 
 
 ```sql
+SELECT producto.nombre, gama.gama
+FROM producto
+JOIN gama_producto gama on producto.gama=gama.gama
+GROUP BY producto.nombre, gama.gama;
 
 ```
 
@@ -495,19 +499,21 @@ GROUP BY e.nombre;
 
 ```sql
 SELECT * FROM producto
-WHERE gama IN (1,2)
+WHERE gama IN ('Frutales','Herbaceas');
 ```
 
 2. Subconsulta con WHERE
 
 ```sql
-
+SELECT * FROM producto
+WHERE precio_venta=(SELECT MAX(precio_venta) FROM producto);
 ```
 
 3. LIKE
 
 ```sql
-
+SELECT * FROM producto
+WHERE nombre LIKE'%ciruelo';
 ```
 
 4. Subconsulta dentro de IN
@@ -516,19 +522,37 @@ WHERE gama IN (1,2)
 SELECT * FROM producto
 WHERE gama IN(
    SELECT gama FROM gama_producto
-   WHERE gama like 'alta'
-)
+   WHERE gama LIKE 'Aromáticas'
+);
 ```
 
 5. WHERE con funciones escalares
-substring
 ```sql
 
 ```
 ## Tips con SELECT
 
 1. Valores fijos
+
+```sql
+
+```
+
 2. Operaciones con columnas
+```sql
+
+```
 3. Condiciones
+```sql
+
+```
 4. Subquery
+```sql
+
+```
 5. Consulta sobre subconsulta
+```sql
+
+```
+
+## Tips con UPDATE
