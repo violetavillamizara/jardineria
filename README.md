@@ -361,30 +361,50 @@
 #### Con operadores básicos de comparación
 
 1. Devuelve el nombre del cliente con mayor límite de crédito.
- ```sql
-   
-   ```
+```sql
+   SELECT c.nombre_cliente, c.limite_credito
+   FROM cliente c
+   WHERE c.limite_credito = (SELECT MAX(c.limite_credito) FROM cliente c);
+```
 
 2. Devuelve el nombre del producto que tenga el precio de venta más caro.
- ```sql
-   
-   ```
+```sql
+   SELECT p.nombre, p.precio_venta
+   FROM producto p
+   WHERE p.precio_venta = (SELECT MAX(p.precio_venta) FROM producto p);
+```
 3. Devuelve el nombre del producto del que se han vendido más unidades. (Tenga en cuenta que tendrá que calcular cuál es el número total de unidades que se han vendido de cada producto a partir de los datos de la tabla `detalle_pedido`)
- ```sql
-   
-   ```
+```sql
+   SELECT p.nombre_producto
+   FROM producto p
+   WHERE p.codigo_producto = (
+      SELECT codigo_producto 
+      FROM detalle_pedido 
+      GROUP BY codigo_producto 
+      ORDER BY SUM(cantidad) DESC)
+      LIMIT 1;
+```
 4. Los clientes cuyo límite de crédito sea mayor que los pagos que haya realizado. (Sin utilizar `INNER JOIN`).
- ```sql
-   
-   ```
+```sql
+   SELECT *
+   FROM cliente c
+   WHERE c.limite_credito > (
+      SELECT SUM(p.total)
+      FROM pago p
+      WHERE c.codigo_cliente = p.codigo_cliente);
+```
 5. Devuelve el producto que más unidades tiene en stock.
- ```sql
-   
-   ```
+```sql
+SELECT *
+FROM producto p
+WHERE p.cantidad_en_stock = (SELECT MAX(p.cantidad_en_stock) FROM producto p);
+```
 6. Devuelve el producto que menos unidades tiene en stock.
- ```sql
-   
-   ```
+```sql
+   SELECT *
+   FROM producto p
+   WHERE p.cantidad_en_stock = (SELECT MIN(p.cantidad_en_stock) FROM producto p);
+```
 7. Devuelve el nombre, los apellidos y el email de los empleados que están a cargo de **Alberto Soria**.
  ```sql
    
@@ -392,9 +412,11 @@
 #### Subconsultas con ALL y ANY
 
 1. Devuelve el nombre del cliente con mayor límite de crédito.
- ```sql
-   
-   ```
+```sql
+SELECT c.nombre_cliente
+FROM cliente c
+WHERE c.limite_credito >= ALL (SELECT c.limite_credito FROM cliente c);
+```
 2. Devuelve el nombre del producto que tenga el precio de venta más caro.
  ```sql
    
@@ -528,7 +550,9 @@ WHERE gama IN(
 
 5. WHERE con funciones escalares
 ```sql
-
+SELECT *
+FROM producto p
+WHERE SUBSTRING(p.nombre, 1) = 'A';
 ```
 ## Tips con SELECT
 
@@ -556,3 +580,8 @@ WHERE gama IN(
 ```
 
 ## Tips con UPDATE
+
+1.
+
+UPDATE producto
+SET cantidad_en_stock = cantidad_en_stock + 10;
