@@ -460,31 +460,60 @@ WHERE c.limite_credito >= ALL (SELECT c.limite_credito FROM cliente c);
 
 1. Devuelve el nombre, apellido1 y cargo de los empleados que no representen a ningún cliente.
 ```sql
-
+SELECT e.nombre, e.apellido1, e.puesto
+FROM empleado e
+JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+WHERE c.codigo_cliente IN (SELECT p.codigo_cliente FROM pago p);
 ```
 2. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
 ```sql
-
+SELECT c.*
+FROM cliente c
+WHERE c.codigo_cliente NOT IN (SELECT p.codigo_cliente FROM pago p);
 ```
 3. Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.
 ```sql
-
+SELECT c.*
+FROM cliente c
+WHERE c.codigo_cliente IN (SELECT p.codigo_cliente FROM pago p);
 ```
 4. Devuelve un listado de los productos que nunca han aparecido en un pedido.
 ```sql
-
+SELECT p.nombre
+FROM producto p
+WHERE p.codigo_producto NOT IN (SELECT d.codigo_producto FROM detalle_pedido d)
+GROUP BY p.nombre;
 ```
 5. Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos empleados que no sean representante de ventas de ningún cliente.
 ```sql
-
+SELECT e.nombre, e.apellido1, e.apellido2, e.puesto
+FROM empleado e
+WHERE e.codigo_empleado NOT IN (SELECT c.codigo_empleado_rep_ventas FROM cliente c);
 ```
 6. Devuelve las oficinas donde **no trabajan** ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama `Frutales`.
 ```sql
-
+SELECT DISTINCT o.*
+FROM oficina o
+JOIN empleado e ON o.codigo_oficina=e.codigo_oficina
+WHERE e.codigo_empleado NOT IN (
+SELECT e.nombre
+FROM empleado e
+JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+JOIN detalle_pedido dp ON p.codigo_pedido=dp.codigo_pedido
+JOIN producto ON dp.codigo_producto=producto.codigo_producto
+WHERE producto.gama='frutales'
+GROUP BY e.nombre);
 ```
 7. Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
 ```sql
-
+SELECT c.* FROM cliente c
+WHERE c.codigo_cliente IN (
+   SELECT c.codigo_cliente
+   FROM cliente c
+   JOIN pedido ON c.codigo_cliente = pedido.codigo_cliente
+   LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+   WHERE p.codigo_cliente IS NULL);
 ```
 
 #### Subconsultas con EXISTS y NOT EXISTS
