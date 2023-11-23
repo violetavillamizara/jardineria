@@ -145,8 +145,8 @@
    ```sql
    SELECT *
    FROM empleado e
-   LEFT JOIN oficina of ON e.codigo_oficina = of.codigo_oficina
-   WHERE of.codigo_oficina IS NULL;
+   LEFT JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
+   WHERE o.codigo_oficina IS NULL;
    ```
 
    5. Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado.
@@ -190,25 +190,46 @@
    9. Devuelve un listado de los productos que nunca han aparecido en un pedido. El resultado debe mostrar el nombre, la descripción y la imagen del producto.
    
    ```sql
-   
+   SELECT p.nombre, p.descripcion, gp.imagen
+   FROM producto p
+   JOIN gama_producto gp ON p.gama=gp.gama
+   LEFT JOIN detalle_pedido dp ON p.codigo_producto=dp.codigo_producto
+   WHERE dp.codigo_producto is null;
+
    ```
 
    10. Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama Frutales.
    
    ```sql
-   
+   SELECT distinct o.*
+   FROM oficina o
+   JOIN empleado e ON o.codigo_oficina = e.codigo_oficina
+   JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+   JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+   JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+   JOIN producto pr ON dp.codigo_producto = pr.codigo_producto
+   WHERE pr.gama != 'Frutales';
    ```
 
    11. Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
    
    ```sql
-   
+   SELECT c.*
+   FROM cliente c
+   JOIN pedido pe ON c.codigo_cliente = pe.codigo_cliente
+   LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+   WHERE p.codigo_cliente IS NULL
+   ORDER BY c.nombre_cliente;
    ```
 
    12. Devuelve un listado con los datos de los empleados que no tienen clientes asociados y el nombre de su jefe asociado.
    
    ```sql
-   
+   SELECT DISTINCT e.*, jefe.nombre
+   FROM empleado e
+   LEFT JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+   LEFT JOIN empleado jefe ON e.codigo_jefe = jefe.codigo_empleado
+   WHERE c.codigo_empleado_rep_ventas IS NULL;
    ```
 
 
@@ -299,7 +320,10 @@
 
    
    ```sql
-   
+   SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega
+   FROM pedido 
+   WHERE fecha_entrega < ADDDATE(fecha_esperada, INTERVAL -2 DAY)
+   ORDER BY codigo_pedido;
    ```
 
     Utilizando la función ADDDATE de MySQL.
@@ -419,11 +443,17 @@ WHERE c.limite_credito >= ALL (SELECT c.limite_credito FROM cliente c);
 ```
 2. Devuelve el nombre del producto que tenga el precio de venta más caro.
  ```sql
-   
+   SELECT p.nombre
+   FROM producto p
+   WHERE precio_venta = ALL (SELECT max(precio_venta) FROM producto)
+   LIMIT 1;
    ```
 3. Devuelve el producto que menos unidades tiene en stock.
  ```sql
-   
+   SELECT p.nombre, p.cantidad_en_stock
+   FROM producto p
+   WHERE p.cantidad_en_stock <= ALL (SELECT p.cantidad_en_stock
+      FROM producto p);
    ```
 
 #### Subconsultas con IN y NOT IN
@@ -460,12 +490,52 @@ WHERE c.limite_credito >= ALL (SELECT c.limite_credito FROM cliente c);
 #### Subconsultas con EXISTS y NOT EXISTS
 
 1. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
+```sql
+SELECT *
+FROM cliente 
+WHERE NOT EXISTS (
+    SELECT codigo_cliente
+    FROM pago 
+    WHERE pago.codigo_cliente = cliente.codigo_cliente
+);
+```
 2. Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.
+```sql
+SELECT *
+FROM cliente
+WHERE EXISTS (
+    SELECT codigo_cliente
+    FROM pago 
+    WHERE pago.codigo_cliente = cliente.codigo_cliente
+);
+```
 3. Devuelve un listado de los productos que nunca han aparecido en un pedido.
+```sql
+SELECT *
+FROM producto p
+WHERE NOT EXISTS (
+    SELECT d.codigo_producto
+    FROM detalle_pedido d
+    WHERE d.codigo_producto = p.codigo_producto
+);
+```
 4. Devuelve un listado de los productos que han aparecido en un pedido alguna vez.
+```sql
+SELECT *
+FROM producto p
+WHERE EXISTS (
+    SELECT d.codigo_producto
+    FROM detalle_pedido d
+    WHERE d.codigo_producto = p.codigo_producto
+);
+```
 
 
-# Tips for Querys
+
+# TIPS
+
+# TIPS for Querys
+
 ## Tips con GROUP BY
 
 1. Agrupar por más de una columna
